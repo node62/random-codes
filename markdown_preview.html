@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Markdown Preview</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+       
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+       
+        .editor-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+       
+        #editor {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+       
+        button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+        }
+       
+        button:hover {
+            background-color: #0052a3;
+        }
+       
+        .preview {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+       
+        .preview img {
+            max-width: 100%;
+        }
+       
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+       
+        .nav-buttons {
+            margin-top: 20px;
+        }
+       
+        #backButton {
+            background-color: #666;
+        }
+       
+        #backButton:hover {
+            background-color: #555;
+        }
+
+        #copyImageButton {
+            background-color: #28a745;
+        }
+
+        #copyImageButton:hover {
+            background-color: #218838;
+        }
+
+        .preview-content {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="editorView">
+            <h1>Markdown Editor</h1>
+            <div class="editor-container">
+                <textarea id="editor" placeholder="Enter your Markdown here..."></textarea>
+                <button onclick="showPreview()">Preview Markdown</button>
+            </div>
+        </div>
+       
+        <div id="previewView" class="preview">
+            <div class="preview-content" id="preview"></div>
+            <div class="nav-buttons">
+                <button id="copyImageButton" onclick="copyAsImage()">Save as Image</button>
+                <button id="backButton" onclick="showEditor()">Back to Editor</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showPreview() {
+            const markdown = document.getElementById('editor').value;
+            const html = marked.parse(markdown);
+            document.getElementById('preview').innerHTML = html;
+            document.getElementById('editorView').style.display = 'none';
+            document.getElementById('previewView').style.display = 'block';
+        }
+       
+        function showEditor() {
+            document.getElementById('editorView').style.display = 'block';
+            document.getElementById('previewView').style.display = 'none';
+        }
+
+        async function copyAsImage() {
+            try {
+                const previewElement = document.getElementById('preview');
+                const canvas = await html2canvas(previewElement, {
+                    backgroundColor: 'white',
+                    scale: 2, // Higher quality
+                    logging: false,
+                    useCORS: true
+                });
+
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'markdown-preview.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('Failed to generate image. Please try again.');
+            }
+        }
+       
+        document.getElementById('editor').value = `# Welcome to Markdown Preview!
+This is a simple example of Markdown syntax.
+## Features:
+- **Bold text**
+- *Italic text*
+- ~~Strikethrough~~
+### Code Example:
+\`\`\`javascript
+console.log('Hello, World!');
+\`\`\`
+> This is a blockquote.`;
+    </script>
+</body>
+</html>
